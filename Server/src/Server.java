@@ -9,8 +9,8 @@ public class Server {
     public static void main(String[] args) throws Exception {
 
 
-        System.out.println("Server running");
-        DatagramSocket serverSocket = new DatagramSocket(9992);
+        DatagramSocket serverSocket = getDatagramSocket();
+
         byte[] receiveData = new byte[1024];
         byte[] sendData = new byte[1024];
 
@@ -18,15 +18,43 @@ public class Server {
 
             DatagramPacket receivePacket = new DatagramPacket(receiveData,receiveData.length);
             serverSocket.receive(receivePacket);
-            String sentence = new String(receivePacket.getData());
-            System.out.println("RECEIVED: " + sentence);
+
+
+            String data = new String(receivePacket.getData());
+            System.out.println("RECEIVED Data: " + data);
+
             InetAddress IPAddress = receivePacket.getAddress();
+            System.out.println("RECEIVED Address: " + IPAddress);
+
             int port = receivePacket.getPort();
-            String capitalizedSentence = sentence.toUpperCase();
+            System.out.println("RECEIVED Port: " + port);
+
+
+            String capitalizedSentence = data.toUpperCase();
             sendData = capitalizedSentence.getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
             serverSocket.send(sendPacket);
+
+
         }
 
+    }
+
+    private static DatagramSocket getDatagramSocket() throws IOException {
+
+        System.out.println("Please Configure Server");
+        System.out.println("Enter the server port number");
+
+        BufferedReader inFromUser =
+                new BufferedReader(new InputStreamReader(System.in));
+
+        int serverPort = Integer.parseInt( inFromUser.readLine() ) ;
+        System.out.println("You have entered Server port: " + serverPort);
+
+
+        DatagramSocket serverSocket = new DatagramSocket(serverPort);
+        System.out.println("Server port is set to: " + serverSocket.getLocalPort());
+
+        return serverSocket;
     }
 }
