@@ -21,7 +21,7 @@ public class Client {
         sendData = getBytes(inFromUser);
 
         DatagramPacket sendPacket = getSendPacket(sendData, serverPort, IPAddress);
-        DatagramPacket receivePacket = getRecievePacket(receiveData);
+        DatagramPacket receivePacket = getReceivePacket(receiveData);
         while(true) {
 
 
@@ -41,7 +41,7 @@ public class Client {
 
     }
 
-    private static DatagramPacket getRecievePacket(byte[] receiveData) {
+    private static DatagramPacket getReceivePacket(byte[] receiveData) {
         return new DatagramPacket(receiveData,receiveData.length);
     }
 
