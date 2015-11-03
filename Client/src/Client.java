@@ -23,6 +23,8 @@ public class Client {
         DatagramPacket sendPacket = getSendPacket(sendData, serverPort, IPAddress);
         DatagramPacket receivePacket = getRecievePacket(receiveData);
         while(true) {
+
+
             clientSocket.connect(IPAddress,serverPort);
 
             clientSocket.send(sendPacket);
@@ -31,6 +33,8 @@ public class Client {
             String modifiedSentence = new String(receivePacket.getData(), 0 ,receivePacket.getLength());
             System.out.println("FROM SERVER:" + modifiedSentence);
             sendPacket.setData(getBytes(inFromUser));
+
+
             clientSocket.disconnect();
 
         }
