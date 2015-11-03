@@ -22,6 +22,7 @@ public class Client {
 
         DatagramPacket sendPacket = getSendPacket(sendData, serverPort, IPAddress);
         DatagramPacket receivePacket = getReceivePacket(receiveData);
+
         while(true) {
 
 
