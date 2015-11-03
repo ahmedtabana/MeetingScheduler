@@ -21,14 +21,19 @@ public class Client {
         sendData = getBytes(inFromUser);
 
         DatagramPacket sendPacket = getSendPacket(sendData, serverPort, IPAddress);
-        clientSocket.send(sendPacket);
-
         DatagramPacket receivePacket = getRecievePacket(receiveData);
-        clientSocket.receive(receivePacket);
+        while(true) {
+            clientSocket.connect(IPAddress,serverPort);
 
-        String modifiedSentence = new String(receivePacket.getData());
-        System.out.println("FROM SERVER:" + modifiedSentence);
-        clientSocket.close();
+            clientSocket.send(sendPacket);
+            clientSocket.receive(receivePacket);
+
+            String modifiedSentence = new String(receivePacket.getData(), 0 ,receivePacket.getLength());
+            System.out.println("FROM SERVER:" + modifiedSentence);
+            sendPacket.setData(getBytes(inFromUser));
+            clientSocket.disconnect();
+
+        }
 
     }
 

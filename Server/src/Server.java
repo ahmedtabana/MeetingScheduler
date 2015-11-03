@@ -20,7 +20,7 @@ public class Server {
             serverSocket.receive(receivePacket);
 
 
-            String data = new String(receivePacket.getData());
+            String data = new String(receivePacket.getData(), 0, receivePacket.getLength());
             System.out.println("RECEIVED Data: " + data);
 
             InetAddress IPAddress = receivePacket.getAddress();
