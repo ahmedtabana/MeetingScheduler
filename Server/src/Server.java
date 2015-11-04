@@ -4,7 +4,7 @@
 import java.io.*;
 import java.net.*;
 
-public class Server {
+public class Server{
 
     private static DatagramSocket serverSocket;
     private static DatagramPacket receivePacket;
@@ -27,7 +27,7 @@ public class Server {
         int serverPort = Integer.parseInt( inFromUser.readLine() ) ;
         System.out.println("You have entered Server port: " + serverPort);
 
-
+        // should make this thread safe, not more than one object should use this at one time
         DatagramSocket serverSocket = new DatagramSocket(serverPort);
         System.out.println("Server port is set to: " + serverSocket.getLocalPort());
 
@@ -55,6 +55,8 @@ public class Server {
         return sendPacket;
     }
 
+    public DatagramSocket getServerSocket(){ return serverSocket;}
+
     public void send() throws IOException {
         serverSocket.send(sendPacket);
 
@@ -76,23 +78,61 @@ public class Server {
 
             myServer.receive();
 
-            String data = new String(myReceivePacket.getData(), 0, myReceivePacket.getLength());
-            System.out.println("RECEIVED Data: " + data);
+            Message message = new Message(myReceivePacket).invoke();
 
-            InetAddress IPAddress = myReceivePacket.getAddress();
-            System.out.println("RECEIVED Address: " + IPAddress);
-
-            int port = myReceivePacket.getPort();
-            System.out.println("RECEIVED Port: " + port);
+            String data = message.getData();
+            InetAddress IPAddress = message.getIpAddress();
+            int port = message.getPort();
 
             String capitalizedSentence = data.toUpperCase();
             sendData = capitalizedSentence.getBytes();
 
-            myServer.createSendPacket(sendData, IPAddress, port);
-            myServer.send();
+            Info myInfo = new Info(receiveData,message.getIpAddress(),message.getPort(),myServer.getServerSocket());
+
+            Thread t = new Thread(myInfo);
+            t.start();
+
+           // myServer.createSendPacket(sendData, IPAddress, port);
+            //myServer.send();
         }
 
     }
 
 
+
+
+    public static class Message {
+        private DatagramPacket myReceivePacket;
+        private String data;
+        private InetAddress ipAddress;
+        private int port;
+
+        public Message(DatagramPacket myReceivePacket) {
+            this.myReceivePacket = myReceivePacket;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public InetAddress getIpAddress() {
+            return ipAddress;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public Message invoke() {
+            data = new String(myReceivePacket.getData(), 0, myReceivePacket.getLength());
+            System.out.println("RECEIVED Data: " + data);
+
+            ipAddress = myReceivePacket.getAddress();
+            System.out.println("RECEIVED Address: " + ipAddress);
+
+            port = myReceivePacket.getPort();
+            System.out.println("RECEIVED Port: " + port);
+            return this;
+        }
+    }
 }
