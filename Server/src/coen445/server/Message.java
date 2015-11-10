@@ -1,5 +1,6 @@
 package coen445.server;
 
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
@@ -7,7 +8,8 @@ import java.net.InetAddress;
  * Created by Ahmed on 15-11-09.
  */
 
-public class Message {
+public class Message implements Serializable{
+
     private DatagramPacket myReceivePacket;
     private String data;
     private InetAddress ipAddress;
