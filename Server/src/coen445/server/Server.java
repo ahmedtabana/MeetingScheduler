@@ -14,13 +14,7 @@ public class Server{
     }
 
 
-    private void setup() throws IOException {
-
-        serverSocket = getDatagramSocket();
-
-    }
-
-    private static DatagramSocket getDatagramSocket() throws IOException {
+    private void setup()  {
 
         System.out.println("Please Configure Server");
         System.out.println("Enter the server port number");
@@ -28,16 +22,35 @@ public class Server{
         BufferedReader inFromUser =
                 new BufferedReader(new InputStreamReader(System.in));
 
-        int serverPort = Integer.parseInt( inFromUser.readLine() ) ;
+        int serverPort = 0;
+        try {
+            serverPort = Integer.parseInt( inFromUser.readLine() );
+
+        } catch (IOException e) {
+
+                System.out.println("Could not get server port number. Server port should be an integer");
+                e.printStackTrace();
+            }
+
         System.out.println("You have entered Server port: " + serverPort);
 
         // should make this thread safe, not more than one object should use this at one time
-        DatagramSocket serverSocket = new DatagramSocket(serverPort);
-        System.out.println("Server port is set to: " + serverSocket.getLocalPort());
+        DatagramSocket serverSocket = null;
+        try {
+            serverSocket = new DatagramSocket(serverPort);
 
-        return serverSocket;
+        } catch (SocketException e) {
+            System.out.println("Could not create server socket");
+            e.printStackTrace();
+        }
+        System.out.println("Server port is set to: " + serverSocket.getLocalPort());
+        System.out.println("Server setup is complete...");
+
     }
 
+    private void displayInfo() {
+
+    }
 
     public void listen(){
 
@@ -98,7 +111,9 @@ public class Server{
 
         Server myServer = new Server();
         myServer.setup();
+        myServer.displayInfo();
         myServer.listen();
 
     }
+
 }
