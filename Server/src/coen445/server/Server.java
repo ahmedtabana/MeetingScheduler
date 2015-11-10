@@ -33,23 +33,31 @@ public class Server{
             }
 
         System.out.println("You have entered Server port: " + serverPort);
+        
+        InetAddress serverIPAddress = null;
 
-        // should make this thread safe, not more than one object should use this at one time
-        DatagramSocket serverSocket = null;
         try {
-            serverSocket = new DatagramSocket(serverPort);
+            serverIPAddress = InetAddress.getByName("localhost");
+        } catch (UnknownHostException e) {
+            System.out.println("Server IP address is not known");
+            e.printStackTrace();
+        }
+        // should make this thread safe, not more than one object should use this at one time
+        try {
+            serverSocket = new DatagramSocket(serverPort,serverIPAddress);
 
         } catch (SocketException e) {
             System.out.println("Could not create server socket");
             e.printStackTrace();
         }
-        System.out.println("Server port is set to: " + serverSocket.getLocalPort());
-        System.out.println("Server setup is complete...");
+
+        System.out.println("Server setup was successful");
 
     }
 
-    private void displayInfo() {
-
+    private void dispalyServerInfo() {
+        System.out.println("Server Port is set to: " + serverSocket.getLocalPort());
+        System.out.println("Server Ip is set to: " + serverSocket.getLocalAddress());
     }
 
     public void listen(){
@@ -111,7 +119,7 @@ public class Server{
 
         Server myServer = new Server();
         myServer.setup();
-        myServer.displayInfo();
+        myServer.dispalyServerInfo();
         myServer.listen();
 
     }
