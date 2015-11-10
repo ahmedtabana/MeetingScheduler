@@ -88,7 +88,7 @@ public class Server{
             String capitalizedSentence = data.toUpperCase();
             sendData = capitalizedSentence.getBytes();
 
-            Info myInfo = new Info(receiveData,message.getIpAddress(),message.getPort(),myServer.getServerSocket());
+            Info myInfo = new Info(sendData,message.getIpAddress(),message.getPort(),myServer.getServerSocket());
 
             Thread t = new Thread(myInfo);
             t.start();
