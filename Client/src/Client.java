@@ -1,6 +1,8 @@
 /**
  * Created by Ahmed on 15-10-25.
  */
+import coen445.server.UDPMessage;
+
 import java.io.*;
 import java.net.*;
 
@@ -25,14 +27,26 @@ public class Client {
 
 
 
-            BufferedReader inFromUser =
-                    new BufferedReader(new InputStreamReader(System.in));
+//            BufferedReader inFromUser =
+//                    new BufferedReader(new InputStreamReader(System.in));
 
-            int serverPort = getServerPort(inFromUser);
+//            int serverPort = getServerPort(inFromUser);
+              int serverPort = 9993;
+
             InetAddress IPAddress = InetAddress.getByName("localhost");
             byte[] sendData = new byte[1024];
-            sendData = getBytes(inFromUser);
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, serverPort);
+//            sendData = getBytes(inFromUser);
+            //DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, serverPort);
+
+            UDPMessage message = new UDPMessage("Cancel", 100);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream(outputStream);
+            os.writeObject(message);
+            System.out.println("From Client, creating message object:");
+            System.out.println(message.toString());
+            byte[] data = outputStream.toByteArray();
+            DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress, serverPort);
+
 
             while(true) {
 
@@ -42,9 +56,9 @@ public class Client {
                 socket.send(sendPacket);
                 socket.receive(receivePacket);
 
-                String modifiedSentence = new String(receivePacket.getData(), 0 ,receivePacket.getLength());
-                System.out.println("FROM SERVER:" + modifiedSentence);
-                sendPacket.setData(getBytes(inFromUser));
+//                String modifiedSentence = new String(receivePacket.getData(), 0 ,receivePacket.getLength());
+//                System.out.println("FROM SERVER:" + modifiedSentence);
+//                sendPacket.setData(getBytes(inFromUser));
 
 
                 socket.disconnect();

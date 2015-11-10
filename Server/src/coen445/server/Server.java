@@ -15,7 +15,9 @@ public class Server{
 
 
     private void setup() throws IOException {
+
         serverSocket = getDatagramSocket();
+
     }
 
     private static DatagramSocket getDatagramSocket() throws IOException {
@@ -36,6 +38,7 @@ public class Server{
         return serverSocket;
     }
 
+
     public void listen(){
 
         byte[] receiveData = new byte[1024];
@@ -54,7 +57,6 @@ public class Server{
                 e.printStackTrace();
             }
 
-
             String data = new String(receivePacket.getData(), 0, receivePacket.getLength());
             System.out.println("RECEIVED Data: " + data);
 
@@ -63,6 +65,21 @@ public class Server{
 
             int port = receivePacket.getPort();
             System.out.println("RECEIVED Port: " + port);
+
+            ByteArrayInputStream in = new ByteArrayInputStream(receiveData);
+            try {
+
+                ObjectInputStream is = new ObjectInputStream(in);
+                UDPMessage message = (UDPMessage) is.readObject();
+
+                System.out.println("UDPMessage object received = "+ message);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
 
             String capitalizedSentence = data.toUpperCase();
             sendData = capitalizedSentence.getBytes();
