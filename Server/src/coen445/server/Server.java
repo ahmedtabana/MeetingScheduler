@@ -8,10 +8,11 @@ import java.net.*;
 public class Server{
 
     private static DatagramSocket serverSocket;
-    private static DatagramPacket receivePacket;
-    private static DatagramPacket sendPacket;
 
-    public Server() {}
+    public Server() {
+
+    }
+
 
     private void setup() throws IOException {
         serverSocket = getDatagramSocket();
@@ -35,67 +36,52 @@ public class Server{
         return serverSocket;
     }
 
-    private void receive() throws IOException {
-        serverSocket.receive(receivePacket);
+    public void listen(){
+
+        byte[] receiveData = new byte[1024];
+        DatagramPacket receivePacket = new DatagramPacket(receiveData,receiveData.length);
+
+        byte[] sendData = new byte[1024];
+
+
+        while(true){
+
+            try {
+
+                serverSocket.receive(receivePacket);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            String data = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            System.out.println("RECEIVED Data: " + data);
+
+            InetAddress IPAddress = receivePacket.getAddress();
+            System.out.println("RECEIVED Address: " + IPAddress);
+
+            int port = receivePacket.getPort();
+            System.out.println("RECEIVED Port: " + port);
+
+            String capitalizedSentence = data.toUpperCase();
+            sendData = capitalizedSentence.getBytes();
+
+            Info myInfo = new Info(sendData,IPAddress,port, serverSocket);
+
+            Thread t = new Thread(myInfo);
+            t.start();
+
+
+        }
+
     }
-
-    private void createReceivePacket(byte[] receiveData) {
-        receivePacket = new DatagramPacket(receiveData,receiveData.length);
-
-    }
-
-    private void createSendPacket(byte[] sendData, InetAddress IPAddress, int port) {
-        sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-    }
-
-    public DatagramPacket getReceivePacket() {
-        return receivePacket;
-    }
-
-    public DatagramPacket getSendPacket() {
-        return sendPacket;
-    }
-
-    public DatagramSocket getServerSocket(){ return serverSocket;}
-
-    public void send() throws IOException {
-        serverSocket.send(sendPacket);
-
-    }
-
 
     public static void main(String[] args) throws Exception {
 
         Server myServer = new Server();
         myServer.setup();
-
-        byte[] receiveData = new byte[1024];
-        byte[] sendData = new byte[1024];
-
-        myServer.createReceivePacket(receiveData);
-        DatagramPacket myReceivePacket = myServer.getReceivePacket();
-
-        while(true){
-
-            myServer.receive();
-
-            Message message = new Message(myReceivePacket).invoke();
-
-            String data = message.getData();
-            InetAddress IPAddress = message.getIpAddress();
-            int port = message.getPort();
-
-            String capitalizedSentence = data.toUpperCase();
-            sendData = capitalizedSentence.getBytes();
-
-            Info myInfo = new Info(sendData,message.getIpAddress(),message.getPort(),myServer.getServerSocket());
-
-            Thread t = new Thread(myInfo);
-            t.start();
-
-           // myServer.createSendPacket(sendData, IPAddress, port);
-            //myServer.send();
-        }
+        myServer.listen();
 
     }
 }

@@ -9,7 +9,6 @@ public class Client {
 
     DatagramSocket socket;
 
-
     Client (){
 
     }
