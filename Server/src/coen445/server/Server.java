@@ -1,6 +1,7 @@
-/**
+package coen445.server; /**
  * Created by Ahmed on 15-10-25.
  */
+
 import java.io.*;
 import java.net.*;
 
