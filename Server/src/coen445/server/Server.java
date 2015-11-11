@@ -22,25 +22,8 @@ public class Server{
                 new BufferedReader(new InputStreamReader(System.in));
 
         int serverPort = 0;
-        String userInput;
-        while (serverPort == 0 || serverPort < 1024) {
 
-            System.out.println("Please enter a number greater than 1024");
-
-            try {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-                userInput = bufferedReader.readLine();
-                serverPort = Integer.parseInt(userInput);
-            } catch (NumberFormatException ex) {
-                System.out.println("Thi is not a number");
-            } catch (IOException e) {
-
-
-                e.printStackTrace();
-            }
-
-
-        }
+        serverPort = getServerPortFromUser(serverPort);
         System.out.println("You have entered Server port: " + serverPort);
 
         InetAddress serverIPAddress = null;
@@ -63,6 +46,29 @@ public class Server{
         }
 
 
+    }
+
+    private int getServerPortFromUser(int serverPort) {
+        String userInput;
+        while (serverPort == 0 || serverPort < 1024) {
+
+            System.out.println("Please enter a number greater than 1024");
+
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+                userInput = bufferedReader.readLine();
+                serverPort = Integer.parseInt(userInput);
+            } catch (NumberFormatException ex) {
+                System.out.println("Thi is not a number");
+            } catch (IOException e) {
+
+
+                e.printStackTrace();
+            }
+
+
+        }
+        return serverPort;
     }
 
     private void displayServerInfo() {
