@@ -8,7 +8,7 @@ import java.net.InetAddress;
 /**
  * Created by Ahmed on 15-11-03.
  */
-public class Info implements Runnable {
+public class ResponseThread implements Runnable {
 
     byte[] sendData;
     InetAddress IPAddress;
@@ -17,7 +17,7 @@ public class Info implements Runnable {
     DatagramSocket socket;
 
 
-    Info(byte[] sendData, InetAddress IPAddress, int port, DatagramSocket socket){
+    ResponseThread(byte[] sendData, InetAddress IPAddress, int port, DatagramSocket socket){
 
         this.sendData = sendData;
         this.IPAddress = IPAddress;

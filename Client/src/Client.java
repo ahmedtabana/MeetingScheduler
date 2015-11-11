@@ -8,11 +8,9 @@ import java.net.*;
 
 public class Client {
 
-
     DatagramSocket socket;
 
     Client (){
-
     }
 
 
@@ -27,25 +25,22 @@ public class Client {
 
 
 
-//            BufferedReader inFromUser =
-//                    new BufferedReader(new InputStreamReader(System.in));
+           BufferedReader inFromUser =
+                    new BufferedReader(new InputStreamReader(System.in));
 
-//            int serverPort = getServerPort(inFromUser);
-              int serverPort = 9993;
+             int serverPort = getServerPort(inFromUser);
 
             InetAddress IPAddress = InetAddress.getByName("localhost");
             byte[] sendData = new byte[1024];
-//            sendData = getBytes(inFromUser);
-            //DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, serverPort);
 
-            UDPMessage message = new UDPMessage("Cancel", 100);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ObjectOutputStream os = new ObjectOutputStream(outputStream);
-            os.writeObject(message);
-            System.out.println("From Client, creating message object:");
-            System.out.println(message.toString());
-            byte[] data = outputStream.toByteArray();
-            DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress, serverPort);
+
+            System.out.println("Enter Message type:");
+            String type = inFromUser.readLine();
+
+
+            UDPMessage message = new UDPMessage(type, 100);
+            sendData = getBytes(message);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, serverPort);
 
 
             while(true) {
@@ -55,11 +50,13 @@ public class Client {
 
                 socket.send(sendPacket);
                 socket.receive(receivePacket);
+                UDPMessage fromServerMessage = getUdpMessage(receiveData, message);
 
-//                String modifiedSentence = new String(receivePacket.getData(), 0 ,receivePacket.getLength());
-//                System.out.println("FROM SERVER:" + modifiedSentence);
-//                sendPacket.setData(getBytes(inFromUser));
-
+                System.out.println("Enter Message type:");
+                String type2 = inFromUser.readLine();
+                message.setType(type2);
+                sendData = getBytes(message);
+                sendPacket.setData(sendData);
 
                 socket.disconnect();
 
@@ -74,6 +71,32 @@ public class Client {
             e.printStackTrace();
         }
 
+    }
+
+    private UDPMessage getUdpMessage(byte[] receiveData, UDPMessage message) {
+        ByteArrayInputStream in = new ByteArrayInputStream(receiveData);
+        try {
+
+            ObjectInputStream is = new ObjectInputStream(in);
+            message = (UDPMessage) is.readObject();
+
+            System.out.println("UDPMessage object received = "+ message);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    private byte[] getBytes(UDPMessage message) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(outputStream);
+        os.writeObject(message);
+        System.out.println("From Client, creating message object:");
+        System.out.println(message.toString());
+        return outputStream.toByteArray();
     }
 
     public static void main(String[] args) throws Exception{

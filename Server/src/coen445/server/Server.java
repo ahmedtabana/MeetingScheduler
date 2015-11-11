@@ -7,6 +7,7 @@ import java.net.*;
 
 public class Server{
 
+    public static final int BUFFER_SIZE = 1024;
     private static DatagramSocket serverSocket;
 
     public Server() {
@@ -78,18 +79,22 @@ public class Server{
         return serverPort;
     }
 
+
+
     private void displayServerInfo() {
 
         System.out.println("Server Port is set to: " + serverSocket.getLocalPort());
         System.out.println("Server Ip is set to: " + serverSocket.getLocalAddress());
     }
 
+
+
     public void listen(){
 
-        byte[] receiveData = new byte[1024];
+        byte[] receiveData = new byte[BUFFER_SIZE];
         DatagramPacket receivePacket = new DatagramPacket(receiveData,receiveData.length);
 
-        byte[] sendData = new byte[1024];
+        byte[] sendData = new byte[BUFFER_SIZE];
 
 
         while(true){
@@ -109,28 +114,54 @@ public class Server{
             int port = receivePacket.getPort();
             System.out.println("RECEIVED Port: " + port);
 
-            ByteArrayInputStream in = new ByteArrayInputStream(receiveData);
+            UDPMessage message = null;
+            message = getUdpMessage(receiveData, message);
+
+            UDPMessage replyMessage =  processTheMessage(message);
             try {
-
-                ObjectInputStream is = new ObjectInputStream(in);
-                UDPMessage message = (UDPMessage) is.readObject();
-
-                System.out.println("UDPMessage object received = "+ message);
-
+                sendData = getBytes(replyMessage);
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
+            ResponseThread myResponseThread = new ResponseThread(sendData,IPAddress,port, serverSocket);
 
-            Info myInfo = new Info(sendData,IPAddress,port, serverSocket);
-
-            Thread t = new Thread(myInfo);
+            Thread t = new Thread(myResponseThread);
             t.start();
 
 
         }
 
+    }
+
+    private byte[] getBytes(UDPMessage message) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(outputStream);
+        os.writeObject(message);
+        System.out.println("From Server, creating message object:");
+        System.out.println(message.toString());
+        return outputStream.toByteArray();
+    }
+
+    private UDPMessage getUdpMessage(byte[] receiveData, UDPMessage message) {
+        ByteArrayInputStream in = new ByteArrayInputStream(receiveData);
+        try {
+
+            ObjectInputStream is = new ObjectInputStream(in);
+            message = (UDPMessage) is.readObject();
+
+            System.out.println("UDPMessage object received = "+ message);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    private UDPMessage processTheMessage(UDPMessage message) {
+        message.setType("Response");
+        return message;
     }
 
     public static void main(String[] args) throws Exception {
