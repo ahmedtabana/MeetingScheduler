@@ -13,7 +13,6 @@ public class Server{
 
     }
 
-
     private void setup()  {
 
         System.out.println("Please Configure Server");
@@ -23,17 +22,27 @@ public class Server{
                 new BufferedReader(new InputStreamReader(System.in));
 
         int serverPort = 0;
-        try {
-            serverPort = Integer.parseInt( inFromUser.readLine() );
+        String userInput;
+        while (serverPort == 0 || serverPort < 1024) {
 
-        } catch (IOException e) {
+            System.out.println("Please enter a number greater than 1024");
 
-                System.out.println("Could not get server port number. Server port should be an integer");
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+                userInput = bufferedReader.readLine();
+                serverPort = Integer.parseInt(userInput);
+            } catch (NumberFormatException ex) {
+                System.out.println("Thi is not a number");
+            } catch (IOException e) {
+
+
                 e.printStackTrace();
             }
 
+
+        }
         System.out.println("You have entered Server port: " + serverPort);
-        
+
         InetAddress serverIPAddress = null;
 
         try {
@@ -45,17 +54,19 @@ public class Server{
         // should make this thread safe, not more than one object should use this at one time
         try {
             serverSocket = new DatagramSocket(serverPort,serverIPAddress);
+            System.out.println("Server setup was successful");
+
 
         } catch (SocketException e) {
             System.out.println("Could not create server socket");
             e.printStackTrace();
         }
 
-        System.out.println("Server setup was successful");
 
     }
 
-    private void dispalyServerInfo() {
+    private void displayServerInfo() {
+
         System.out.println("Server Port is set to: " + serverSocket.getLocalPort());
         System.out.println("Server Ip is set to: " + serverSocket.getLocalAddress());
     }
@@ -78,8 +89,6 @@ public class Server{
                 e.printStackTrace();
             }
 
-            String data = new String(receivePacket.getData(), 0, receivePacket.getLength());
-            System.out.println("RECEIVED Data: " + data);
 
             InetAddress IPAddress = receivePacket.getAddress();
             System.out.println("RECEIVED Address: " + IPAddress);
@@ -101,10 +110,6 @@ public class Server{
                 e.printStackTrace();
             }
 
-
-            String capitalizedSentence = data.toUpperCase();
-            sendData = capitalizedSentence.getBytes();
-
             Info myInfo = new Info(sendData,IPAddress,port, serverSocket);
 
             Thread t = new Thread(myInfo);
@@ -118,8 +123,9 @@ public class Server{
     public static void main(String[] args) throws Exception {
 
         Server myServer = new Server();
+
         myServer.setup();
-        myServer.dispalyServerInfo();
+        myServer.displayServerInfo();
         myServer.listen();
 
     }
