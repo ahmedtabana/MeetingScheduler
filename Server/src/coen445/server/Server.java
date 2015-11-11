@@ -22,19 +22,18 @@ public class Server{
                 new BufferedReader(new InputStreamReader(System.in));
 
         int serverPort = 0;
-
         serverPort = getServerPortFromUser(serverPort);
-        System.out.println("You have entered Server port: " + serverPort);
 
         InetAddress serverIPAddress = null;
+        serverIPAddress = getServerInetAddress(serverIPAddress);
 
-        try {
-            serverIPAddress = InetAddress.getByName("localhost");
-        } catch (UnknownHostException e) {
-            System.out.println("Server IP address is not known");
-            e.printStackTrace();
-        }
         // should make this thread safe, not more than one object should use this at one time
+        createServerSocket(serverPort, serverIPAddress);
+
+
+    }
+
+    private void createServerSocket(int serverPort, InetAddress serverIPAddress) {
         try {
             serverSocket = new DatagramSocket(serverPort,serverIPAddress);
             System.out.println("Server setup was successful");
@@ -44,8 +43,16 @@ public class Server{
             System.out.println("Could not create server socket");
             e.printStackTrace();
         }
+    }
 
-
+    private InetAddress getServerInetAddress(InetAddress serverIPAddress) {
+        try {
+            serverIPAddress = InetAddress.getByName("localhost");
+        } catch (UnknownHostException e) {
+            System.out.println("Server IP address is not known");
+            e.printStackTrace();
+        }
+        return serverIPAddress;
     }
 
     private int getServerPortFromUser(int serverPort) {
