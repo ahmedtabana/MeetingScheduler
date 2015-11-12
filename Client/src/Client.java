@@ -99,24 +99,7 @@ public class Client {
         return outputStream.toByteArray();
     }
 
-    public static void main(String[] args) throws Exception{
 
-        Client client = new Client();
-        client.connect();
-
-    }
-
-
-
-
-
-    private  byte[] getBytes(BufferedReader inFromUser) throws IOException {
-        byte[] sendData;
-        System.out.println("Enter the data to be sent to the server:");
-        String data = inFromUser.readLine();
-        sendData = data.getBytes();
-        return sendData;
-    }
 
     private int getServerPort(BufferedReader inFromUser) throws IOException {
         System.out.println("Please Configure Client");
@@ -127,4 +110,14 @@ public class Client {
         System.out.println("You have entered Server port: " + serverPort);
         return serverPort;
     }
+
+
+    public static void main(String[] args) throws Exception{
+
+        Client client = new Client();
+        client.connect();
+
+    }
+
 }
+// Hello in Client
