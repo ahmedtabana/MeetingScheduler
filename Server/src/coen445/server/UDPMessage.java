@@ -39,4 +39,3 @@ public class UDPMessage implements Serializable {
     }
 }
 
-//TESTING DESKTOP APP
